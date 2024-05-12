@@ -1,0 +1,44 @@
+import pandas as pd
+
+# reading data
+data = pd.read_csv('top_100.csv')
+
+# fit transform the data
+from sklearn.preprocessing import LabelEncoder
+le_ = LabelEncoder()
+
+for i in data:
+    data[i] = le_.fit_transform(data[i])
+
+id_ = data.id
+name_ = data.name
+duration_ = data.duration
+loudness_ = data.loudness
+energy_ = data.energy
+
+import numpy as np
+dataFrameX = pd.concat([id_, name_], axis='columns')
+dataframex = pd.concat([duration_, loudness_], axis='columns')
+X = pd.concat([dataFrameX, dataframex], axis='columns')
+
+Y = pd.DataFrame(energy_)
+Y = np.reshape(Y, (-1,))
+from sklearn.model_selection import train_test_split
+
+xtrain, xtest, ytrain, ytest = train_test_split(X,Y, train_size=0.2, shuffle=True)
+from sklearn.linear_model import LogisticRegression
+model = LogisticRegression(max_iter=100000)
+model.fit(xtrain, ytrain)
+total_ = []
+for i in range(5):
+    total_ =+ model.score(xtest, ytest)*100 # [75]
+    print(total_)
+
+from sklearn.linear_model import LinearRegression
+model_linear = LinearRegression()
+model_linear.fit(xtrain, ytrain)
+print(Y) # [54]
+total_ = []
+for i in range(5):
+    total_ =+ model_linear.score(xtest, ytest)*100 # [75]
+    print(total_) # 42.89536616904114%
